@@ -128,7 +128,7 @@ export function AuthForm() {
         <TabsTrigger value="signup">Sign Up</TabsTrigger>
       </TabsList>
       <TabsContent value="signin">
-        <div className="space-y-4">
+        <div className="space-y-4 pt-4">
             <Form {...signInForm}>
             <form onSubmit={signInForm.handleSubmit(onSignIn)} className="space-y-4">
                 <FormField control={signInForm.control} name="email" render={({ field }) => (
@@ -163,7 +163,7 @@ export function AuthForm() {
         </div>
       </TabsContent>
       <TabsContent value="signup">
-      <div className="space-y-4">
+      <div className="space-y-4 pt-4">
             <Form {...signUpForm}>
             <form onSubmit={signUpForm.handleSubmit(onSignUp)} className="space-y-4">
                 <FormField control={signUpForm.control} name="email" render={({ field }) => (

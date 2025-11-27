@@ -75,7 +75,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <Card className="flex flex-col">
+    <Card className="flex flex-col bg-secondary/30 border-primary/20 hover:border-primary/50 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-1">
       <CardHeader className="p-0">
         {product.imageUrl && (
           <Image
@@ -89,15 +89,15 @@ export default function ProductCard({ product }: ProductCardProps) {
         )}
       </CardHeader>
       <CardContent className="p-6 flex-grow">
-        <CardTitle className="font-headline text-xl mb-1">{product.title}</CardTitle>
+        <CardTitle className="font-headline text-xl mb-1 text-primary-foreground">{product.title}</CardTitle>
         <p className="text-sm font-semibold text-primary mb-2">{product.game}</p>
         <CardDescription>{product.desc}</CardDescription>
       </CardContent>
       <CardFooter className="flex justify-between items-center p-6 pt-0">
-        <p className="text-2xl font-bold text-primary">${product.price.toFixed(2)}</p>
+        <p className="text-2xl font-bold text-accent">${product.price.toFixed(2)}</p>
         <AlertDialog>
             <AlertDialogTrigger asChild>
-                <Button disabled={authLoading || isOrdering}>
+                <Button disabled={authLoading || isOrdering} className="animate-neon-glow">
                     {isOrdering ? (
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     ) : (
