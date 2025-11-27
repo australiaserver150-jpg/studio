@@ -65,7 +65,7 @@
 
 @layer utilities {
   .animate-button-click {
-    animation: button-click 0.3s ease-out forwards;
+    animation: button-click-ripple 0.4s ease-out forwards;
   }
   .animate-neon-glow {
     animation: neon-glow 1.5s ease-in-out infinite alternate;
@@ -77,18 +77,17 @@
   }
 }
 
-@keyframes button-click {
+@keyframes button-click-ripple {
   0% {
     transform: scale(1);
     box-shadow: 0 0 0 0 hsl(var(--primary) / 0.7);
   }
   50% {
-    transform: scale(0.95);
-    box-shadow: 0 0 10px 5px hsl(var(--primary) / 0.4);
+    transform: scale(0.97);
   }
   100% {
     transform: scale(1);
-    box-shadow: 0 0 0 0 hsl(var(--primary) / 0.7);
+    box-shadow: 0 0 0 1.5rem hsl(var(--primary) / 0);
   }
 }
 
@@ -120,5 +119,23 @@
   }
   100% {
     background-position: 200% 0;
+  }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .animate-button-click,
+  .animate-neon-glow,
+  .animate-pulse-google,
+  .animate-shimmer {
+    animation: none;
   }
 }
