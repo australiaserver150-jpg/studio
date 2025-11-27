@@ -29,10 +29,10 @@ import {
 import confetti from 'canvas-confetti';
 
 interface OrdersTableProps {
-  orders: Order[];
+  initialOrders: Order[];
 }
 
-export function OrdersTable({ orders: initialOrders }: OrdersTableProps) {
+export function OrdersTable({ initialOrders }: OrdersTableProps) {
   const [orders, setOrders] = useState<Order[]>(initialOrders);
   const [loadingOrderId, setLoadingOrderId] = useState<string | null>(null);
   const { toast } = useToast();
@@ -90,7 +90,7 @@ export function OrdersTable({ orders: initialOrders }: OrdersTableProps) {
             ) : (
             orders.map((order) => (
               <TableRow key={order.id} className={order.status === 'delivered' ? 'bg-secondary/30' : ''}>
-                <TableCell>{new Date(order.createdAt).toLocaleString()}</TableCell>
+                <TableCell>{order.createdAt ? new Date(order.createdAt).toLocaleString() : 'N/A'}</TableCell>
                 <TableCell>{order.userEmail}</TableCell>
                 <TableCell>{order.productTitle}</TableCell>
                 <TableCell className="font-mono text-xs">{order.gameUid}</TableCell>
