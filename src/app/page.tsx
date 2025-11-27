@@ -11,7 +11,7 @@ import { getProducts } from '@/lib/firestore';
 import ProductCard from '@/components/store/ProductCard';
 import { useEffect, useState, useRef } from 'react';
 import type { Product } from '@/types';
-import { Loader2, PlusCircle } from 'lucide-react';
+import { Loader2, PlusCircle, LifeBuoy, PackageX } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/hooks/useAuth';
 import Link from 'next/link';
@@ -83,20 +83,29 @@ export default function Home() {
         ) : (
           <Card className="col-span-full">
             <CardHeader>
-              <CardTitle>No Products Available</CardTitle>
+              <CardTitle className="text-center">Store is Currently Empty</CardTitle>
             </CardHeader>
-            <CardContent className="flex flex-col items-center justify-center text-center p-6">
-              <p className="text-muted-foreground mb-4">
-                It looks like the store is currently empty.
+            <CardContent className="flex flex-col items-center justify-center text-center p-10">
+              <PackageX className="w-16 h-16 text-muted-foreground mb-4" />
+              <p className="text-muted-foreground mb-6 max-w-md">
+                It looks like we're out of stock right now. Please check back later! If you need assistance, our support team is here to help.
               </p>
-              {isAdmin && (
-                <Button asChild>
-                  <Link href="/admin">
-                    <PlusCircle className="mr-2 h-4 w-4" />
-                    Add a New Product
-                  </Link>
+              <div className="flex gap-4">
+                {isAdmin && (
+                  <Button asChild>
+                    <Link href="/admin">
+                      <PlusCircle className="mr-2 h-4 w-4" />
+                      Add New Product
+                    </Link>
+                  </Button>
+                )}
+                <Button variant="outline" asChild>
+                  <a href="mailto:support@example.com">
+                    <LifeBuoy className="mr-2 h-4 w-4" />
+                    Contact Support
+                  </a>
                 </Button>
-              )}
+              </div>
             </CardContent>
           </Card>
         )}
