@@ -70,6 +70,11 @@
   .animate-neon-glow {
     animation: neon-glow 1.5s ease-in-out infinite alternate;
   }
+  .animate-shimmer {
+    background: linear-gradient(90deg, hsl(var(--muted)) 25%, hsl(var(--muted) / 0.7) 50%, hsl(var(--muted)) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite linear;
+  }
 }
 
 @keyframes button-click {
@@ -107,4 +112,13 @@
 
 .animate-pulse-google {
   animation: pulse-google 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
