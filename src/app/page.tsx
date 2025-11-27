@@ -11,13 +11,16 @@ import { getProducts } from '@/lib/firestore';
 import ProductCard from '@/components/store/ProductCard';
 import { useEffect, useState, useRef } from 'react';
 import type { Product } from '@/types';
-import { Loader2 } from 'lucide-react';
+import { Loader2, PlusCircle } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useAuth } from '@/hooks/useAuth';
+import Link from 'next/link';
 
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const productsRef = useRef<HTMLDivElement>(null);
+  const { isAdmin } = useAuth();
 
   useEffect(() => {
     async function fetchProducts() {
@@ -76,11 +79,18 @@ export default function Home() {
             <CardHeader>
               <CardTitle>No Products Available</CardTitle>
             </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">
-                The administrator has not added any products yet. Please check
-                back later.
+            <CardContent className="flex flex-col items-center justify-center text-center p-6">
+              <p className="text-muted-foreground mb-4">
+                It looks like the store is currently empty.
               </p>
+              {isAdmin && (
+                <Button asChild>
+                  <Link href="/admin">
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    Add a New Product
+                  </Link>
+                </Button>
+              )}
             </CardContent>
           </Card>
         )}
