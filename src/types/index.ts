@@ -36,7 +36,7 @@ export type Order = z.infer<typeof OrderSchema> & {
 export const GameUserSchema = z.object({
   uid: z.string(),
   email: z.string().email(),
-  role: z.string().optional(),
+  role: z.enum(['user', 'admin']),
   createdAt: z.any(),
 });
 

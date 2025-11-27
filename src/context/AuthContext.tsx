@@ -39,20 +39,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         if (!userSnap.exists()) {
           // New user, create profile
-          const newUser: Omit<GameUser, 'uid'> = {
+          const newUserProfile: Omit<GameUser, 'uid'> = {
             email: firebaseUser.email || '',
             createdAt: serverTimestamp(),
             role: 'user',
           };
-          await setDoc(userRef, newUser);
-          setGameUser({ uid: firebaseUser.uid, ...newUser });
+          await setDoc(userRef, newUserProfile);
+          setGameUser({ uid: firebaseUser.uid, ...newUserProfile });
+          setIsAdmin(false);
         } else {
-          setGameUser({ uid: firebaseUser.uid, ...userSnap.data() } as GameUser);
+          const profileData = userSnap.data() as Omit<GameUser, 'uid'>;
+          setGameUser({ uid: firebaseUser.uid, ...profileData });
+          setIsAdmin(profileData.role === 'admin');
         }
-
-        const idTokenResult = await firebaseUser.getIdTokenResult();
-        setIsAdmin(idTokenResult.claims.admin === true);
-
+        
         // Redirect from login page if user is already logged in
         if (pathname === '/login') {
             router.push('/');
