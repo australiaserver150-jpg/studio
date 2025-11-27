@@ -30,6 +30,8 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import confetti from 'canvas-confetti';
+import { analytics } from '@/lib/firebase';
+import { logEvent } from 'firebase/analytics';
 
 interface ProductCardProps {
   product: Product;
@@ -94,6 +96,13 @@ export default function ProductCard({ product }: ProductCardProps) {
 
     setIsOrdering(true);
     try {
+      // TODO: PAYMENT GATEWAY INTEGRATION (Client-side)
+      // 1. On the server, create a checkout session with Stripe/Razorpay.
+      // 2. Redirect the user to the payment provider's checkout page.
+      // 3. After successful payment, the provider will redirect back to your app.
+      //    The 'createOrderAction' should be called from your success page handler.
+      // For now, we will create the order directly.
+
       await createOrderAction({
         productId: product.id,
         productTitle: product.title,
@@ -124,6 +133,16 @@ export default function ProductCard({ product }: ProductCardProps) {
       });
     } finally {
       setIsOrdering(false);
+    }
+  };
+
+  const trackBuyButtonClick = async () => {
+    const analyticsInstance = await analytics;
+    if (analyticsInstance) {
+      logEvent(analyticsInstance, 'select_content', {
+        content_type: 'product',
+        item_id: product.id,
+      });
     }
   };
 
@@ -159,7 +178,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           <p className="text-2xl font-bold text-accent">${product.price.toFixed(2)}</p>
           <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
             <DialogTrigger asChild>
-              <Button disabled={authLoading} className="animate-neon-glow">
+              <Button onClick={trackBuyButtonClick} disabled={authLoading} className="animate-neon-glow">
                 <ShoppingCart className="mr-2 h-4 w-4" />
                 Buy Now
               </Button>

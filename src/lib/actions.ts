@@ -48,6 +48,12 @@ export async function deleteProductAction(productId: string) {
 export async function createOrderAction(orderData: Omit<Order, 'id' | 'status' | 'createdAt'>) {
     const validatedData = OrderSchema.omit({ id: true, status: true, createdAt: true }).parse(orderData);
 
+    // TODO: PAYMENT GATEWAY INTEGRATION (Server-side)
+    // 1. This function should be triggered by a webhook from your payment provider (e.g., Stripe) after a successful payment.
+    // 2. The webhook payload should contain the necessary data to create the order.
+    // 3. Verify the webhook signature to ensure it's a legitimate request from the payment provider.
+    // 4. Create the order in Firestore only after successful payment verification.
+    
     await addDoc(collection(db, 'orders'), {
         ...validatedData,
         status: 'pending',

@@ -2,6 +2,7 @@
 import { getApp, getApps, initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+import { getAnalytics, isSupported } from "firebase/analytics";
 
 // IMPORTANT: Replace this with your own Firebase configuration
 // For more information on how to get this, see:
@@ -21,4 +22,7 @@ const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-export { app, auth, db };
+// Initialize Firebase Analytics
+const analytics = isSupported().then(yes => yes ? getAnalytics(app) : null);
+
+export { app, auth, db, analytics };
