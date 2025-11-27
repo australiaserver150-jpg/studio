@@ -11,7 +11,7 @@ const firebaseConfig = {
   authDomain: "fftopup-b6155.firebaseapp.com",
   databaseURL: "https://fftopup-b6155-default-rtdb.firebaseio.com",
   projectId: "fftopup-b6155",
-  storageBucket: "fftopup-b6155.appspot.com",
+  storageBucket: "fftopup-b6155.firebasestorage.app",
   messagingSenderId: "928923877740",
   appId: "1:928923877740:web:b6cbc75a13993886ad7349"
 };
