@@ -112,13 +112,13 @@ export function ProductsTable({ products: initialProducts }: ProductsTableProps)
                 <TableCell>{product.game}</TableCell>
                 <TableCell className="text-right">${product.price.toFixed(2)}</TableCell>
                 <TableCell className="text-right space-x-2">
-                  <Button variant="ghost" size="icon" onClick={() => handleEditClick(product)} className="group">
+                  <Button variant="ghost" size="icon" onClick={() => handleEditClick(product)} className="group" aria-label={`Edit ${product.title}`}>
                     <Edit className="h-4 w-4 transition-transform duration-200 group-hover:scale-125" />
                   </Button>
 
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
-                        <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive group">
+                        <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive group" aria-label={`Delete ${product.title}`}>
                             <Trash2 className="h-4 w-4 transition-transform duration-200 group-hover:scale-125" />
                         </Button>
                     </AlertDialogTrigger>
