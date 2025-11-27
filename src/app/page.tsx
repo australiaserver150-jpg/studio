@@ -100,7 +100,7 @@ export default function Home() {
                   </Button>
                 )}
                 <Button variant="outline" asChild>
-                  <a href="mailto:support@example.com">
+                  <a href="mailto:australiaserver150@gmail.com">
                     <LifeBuoy className="mr-2 h-4 w-4" />
                     Contact Support
                   </a>
