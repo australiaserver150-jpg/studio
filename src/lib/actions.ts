@@ -11,7 +11,6 @@ import {
   updateDoc,
 } from 'firebase/firestore';
 import { Product, ProductSchema, Order, OrderSchema } from '@/types';
-import { generateProductDescription as generateProductDescriptionAI } from '@/ai/flows/generate-product-description';
 
 export async function addProductAction(productData: Omit<Product, 'id' | 'createdAt'>) {
   const validatedData = ProductSchema.omit({ id: true, createdAt: true }).parse(productData);
@@ -63,18 +62,4 @@ export async function updateOrderStatusAction(orderId: string, status: 'pending'
     await updateDoc(orderRef, { status });
 
     revalidatePath('/admin');
-}
-
-export async function generateDescriptionAction(productTitle: string, gameTitle: string) {
-    if (!productTitle || !gameTitle) {
-        return { error: 'Product Title and Game Title are required.' };
-    }
-    
-    try {
-        const result = await generateProductDescriptionAI({ productTitle, gameTitle });
-        return { description: result.description };
-    } catch(e) {
-        console.error(e);
-        return { error: 'Failed to generate description.' };
-    }
 }

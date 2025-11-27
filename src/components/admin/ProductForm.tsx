@@ -15,9 +15,9 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import type { Product } from '@/types';
-import { addProductAction, updateProductAction, generateDescriptionAction } from '@/lib/actions';
+import { addProductAction, updateProductAction } from '@/lib/actions';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Sparkles } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -41,7 +41,6 @@ interface ProductFormProps {
 export function ProductForm({ product, onOpenChange }: ProductFormProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(false);
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(FormSchema),
@@ -53,36 +52,6 @@ export function ProductForm({ product, onOpenChange }: ProductFormProps) {
       imageId: PlaceHolderImages.find(p => p.imageUrl === product?.imageUrl)?.id || '',
     },
   });
-
-  const handleGenerateDescription = async () => {
-    const { title, game } = form.getValues();
-    if (!title || !game) {
-      toast({
-        variant: 'destructive',
-        title: 'Missing Information',
-        description: 'Please provide a Product Title and Game Title first.',
-      });
-      return;
-    }
-
-    setIsGenerating(true);
-    const result = await generateDescriptionAction(title, game);
-    if (result.description) {
-      form.setValue('desc', result.description);
-      toast({
-        title: 'Description Generated!',
-        description: 'The AI-powered description has been added.',
-      });
-    } else {
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: result.error || 'Could not generate description.',
-      });
-    }
-    setIsGenerating(false);
-  };
-
 
   const onSubmit = async (data: ProductFormValues) => {
     setIsSubmitting(true);
@@ -112,6 +81,8 @@ export function ProductForm({ product, onOpenChange }: ProductFormProps) {
         toast({ title: 'Success', description: 'Product added successfully.' });
       }
       onOpenChange(false);
+      // This is a workaround to ensure the page reloads and shows the new data
+      window.location.reload();
     } catch (error) {
       toast({
         variant: 'destructive',
@@ -172,23 +143,7 @@ export function ProductForm({ product, onOpenChange }: ProductFormProps) {
           name="desc"
           render={({ field }) => (
             <FormItem>
-              <div className="flex items-center justify-between">
-                <FormLabel>Description</FormLabel>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleGenerateDescription}
-                  disabled={isGenerating}
-                >
-                  {isGenerating ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : (
-                    <Sparkles className="mr-2 h-4 w-4 text-accent" />
-                  )}
-                  Generate with AI
-                </Button>
-              </div>
+              <FormLabel>Description</FormLabel>
               <FormControl>
                 <Textarea
                   placeholder="A brief, engaging description of the product."

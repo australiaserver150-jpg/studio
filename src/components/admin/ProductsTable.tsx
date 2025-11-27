@@ -16,7 +16,6 @@ import {
   SheetDescription,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from '@/components/ui/sheet';
 import {
     AlertDialog,
@@ -76,7 +75,7 @@ export function ProductsTable({ products: initialProducts }: ProductsTableProps)
   return (
     <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
       <div className="flex justify-end mb-4">
-        <Button onClick={handleAddClick}><PlusCircle className="mr-2" /> Add Product</Button>
+        <Button onClick={handleAddClick}><PlusCircle className="mr-2 h-4 w-4" /> Add Product</Button>
       </div>
       <div className="rounded-md border">
         <Table>

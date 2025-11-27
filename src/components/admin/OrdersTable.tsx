@@ -26,6 +26,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import confetti from 'canvas-confetti';
 
 interface OrdersTableProps {
   orders: Order[];
@@ -51,6 +52,11 @@ export function OrdersTable({ orders: initialOrders }: OrdersTableProps) {
         title: 'Success',
         description: 'Order marked as delivered.',
       });
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 },
+      });
     } catch (error) {
       toast({
         variant: 'destructive',
@@ -70,6 +76,7 @@ export function OrdersTable({ orders: initialOrders }: OrdersTableProps) {
               <TableHead>Order Date</TableHead>
               <TableHead>User</TableHead>
               <TableHead>Product</TableHead>
+              <TableHead>Game UID</TableHead>
               <TableHead className="text-right">Price</TableHead>
               <TableHead className="text-center">Status</TableHead>
               <TableHead className="text-right">Action</TableHead>
@@ -78,17 +85,18 @@ export function OrdersTable({ orders: initialOrders }: OrdersTableProps) {
           <TableBody>
             {orders.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center h-24">No orders yet.</TableCell>
+                <TableCell colSpan={7} className="text-center h-24">No orders yet.</TableCell>
               </TableRow>
             ) : (
             orders.map((order) => (
-              <TableRow key={order.id}>
-                <TableCell>{new Date(order.createdAt).toLocaleDateString()}</TableCell>
+              <TableRow key={order.id} className={order.status === 'delivered' ? 'bg-secondary/30' : ''}>
+                <TableCell>{new Date(order.createdAt).toLocaleString()}</TableCell>
                 <TableCell>{order.userEmail}</TableCell>
                 <TableCell>{order.productTitle}</TableCell>
+                <TableCell className="font-mono text-xs">{order.gameUid}</TableCell>
                 <TableCell className="text-right">${order.price.toFixed(2)}</TableCell>
                 <TableCell className="text-center">
-                  <Badge variant={order.status === 'pending' ? 'destructive' : 'default'}>
+                  <Badge variant={order.status === 'pending' ? 'destructive' : 'default'} className={order.status === 'delivered' ? 'bg-green-600' : ''}>
                     {order.status}
                   </Badge>
                 </TableCell>
