@@ -1,3 +1,52 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "cosmic_crystals_1000",
+      "description": "A pile of glowing purple crystals.",
+      "imageUrl": "https://images.unsplash.com/photo-1755815694434-805488bed53d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxnbG93aW5nJTIwY3J5c3RhbHN8ZW58MHx8fHwxNzY0Mjc1MjIyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "glowing crystals"
+    },
+    {
+      "id": "gold_coins_5000",
+      "description": "A treasure chest overflowing with gold coins.",
+      "imageUrl": "https://images.unsplash.com/photo-1517097473408-c0d7983cb95c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxnb2xkJTIwY29pbnN8ZW58MHx8fHwxNzY0MjM2MjkxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "gold coins"
+    },
+    {
+      "id": "speedster_nitro_pack",
+      "description": "A sports car with motion blur, conveying speed.",
+      "imageUrl": "https://images.unsplash.com/photo-1541443724873-8ba49db7a737?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxyYWNpbmclMjBjYXJ8ZW58MHx8fHwxNzY0MjExMTk2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "racing car"
+    },
+    {
+      "id": "mana_potions_10",
+      "description": "A set of glowing blue potions on a stone table.",
+      "imageUrl": "https://images.unsplash.com/photo-1618647961948-54fbc3672b07?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8ZmFudGFzeSUyMHBvdGlvbnxlbnwwfHx8fDE3NjQyNzUyMjJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "fantasy potion"
+    },
+    {
+      "id": "battle_pass_season_3",
+      "description": "A heroic character posing in front of an explosion.",
+      "imageUrl": "https://images.unsplash.com/photo-1718734819268-e58a4a984463?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxnYW1lJTIwaGVyb3xlbnwwfHx8fDE3NjQyNzUyMjN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "game hero"
+    },
+    {
+      "id": "ancient_scrolls_bundle",
+      "description": "An old, unfurled scroll with glowing runes.",
+      "imageUrl": "https://images.unsplash.com/photo-1649351340622-8092aa097b0f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxhbmNpZW50JTIwc2Nyb2xsfGVufDB8fHx8MTc2NDE4NDQ5MHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "ancient scroll"
+    },
+    {
+      "id": "cyberpunk_implant_kit",
+      "description": "A futuristic bionic arm with glowing circuits.",
+      "imageUrl": "https://images.unsplash.com/photo-1689443111384-1cf214df988a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxjeWJlcnB1bmslMjB0ZWNofGVufDB8fHx8MTc2NDI3NTIyM3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "cyberpunk tech"
+    },
+    {
+      "id": "dragon_scale_armor",
+      "description": "A set of shiny, metallic dragon-like armor.",
+      "imageUrl": "https://images.unsplash.com/photo-1747238748826-46b14a561877?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxmYW50YXN5JTIwYXJtb3J8ZW58MHx8fHwxNzY0Mjc1MjIyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "fantasy armor"
+    }
+  ]
 }
