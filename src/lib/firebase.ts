@@ -7,12 +7,13 @@ import { getFirestore } from 'firebase/firestore';
 // For more information on how to get this, see:
 // https://firebase.google.com/docs/web/setup#available-libraries
 const firebaseConfig = {
-  apiKey: "REPLACE_WITH_YOUR_API_KEY",
-  authDomain: "REPLACE_WITH_YOUR_AUTH_DOMAIN",
-  projectId: "REPLACE_WITH_YOUR_PROJECT_ID",
-  storageBucket: "REPLACE_WITH_YOUR_STORAGE_BUCKET",
-  messagingSenderId: "REPLACE_WITH_YOUR_MESSAGING_SENDER_ID",
-  appId: "REPLACE_WITH_YOUR_APP_ID",
+  apiKey: "AIzaSyBJ38gN4pz1RZph4oA5CDMChO45rgO6dss",
+  authDomain: "fftopup-b6155.firebaseapp.com",
+  databaseURL: "https://fftopup-b6155-default-rtdb.firebaseio.com",
+  projectId: "fftopup-b6155",
+  storageBucket: "fftopup-b6155.appspot.com",
+  messagingSenderId: "928923877740",
+  appId: "1:928923877740:web:b6cbc75a13993886ad7349"
 };
 
 // Initialize Firebase
