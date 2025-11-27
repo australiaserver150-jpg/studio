@@ -1,0 +1,63 @@
+{
+  "entities": {
+    "product": {
+      "title": "Product",
+      "description": "Represents a top-up package for a game.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "description": "The title of the product." },
+        "game": { "type": "string", "description": "The game the product is for." },
+        "price": { "type": "number", "description": "The price of the product." },
+        "desc": { "type": "string", "description": "A description of the product." },
+        "imageUrl": { "type": "string", "format": "uri", "description": "URL of the product image." },
+        "imageHint": { "type": "string", "description": "Hint for AI image generation." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Timestamp of when the product was created." }
+      },
+      "required": ["title", "game", "price", "desc"]
+    },
+    "order": {
+      "title": "Order",
+      "description": "Represents a customer's order for a product.",
+      "type": "object",
+      "properties": {
+        "productId": { "type": "string" },
+        "productTitle": { "type": "string" },
+        "userId": { "type": "string" },
+        "userEmail": { "type": "string", "format": "email" },
+        "price": { "type": "number" },
+        "gameUid": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "delivered"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["productId", "productTitle", "userId", "userEmail", "price", "gameUid", "status"]
+    },
+    "gameUser": {
+      "title": "Game User",
+      "description": "Represents a user of the application.",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "format": "email" },
+        "role": { "type": "string", "enum": ["user", "admin"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["email", "role"]
+    }
+  },
+  "auth": {
+    "providers": ["google.com", "password"]
+  },
+  "firestore": {
+    "/products/{productId}": {
+      "schema": { "$ref": "#/entities/product" },
+      "description": "Stores all available top-up products."
+    },
+    "/orders/{orderId}": {
+      "schema": { "$ref": "#/entities/order" },
+      "description": "Stores all customer orders."
+    },
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/gameUser" },
+      "description": "Stores user profile information and roles."
+    }
+  }
+}
