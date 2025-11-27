@@ -22,6 +22,7 @@ export const OrderSchema = z.object({
   userId: z.string(),
   userEmail: z.string().email(),
   price: z.number(),
+  gameUid: z.string().min(1, 'Game UID is required'),
   status: z.enum(['pending', 'delivered']),
   createdAt: z.any(),
 });
