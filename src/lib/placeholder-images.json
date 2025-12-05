@@ -1,3 +1,16 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "user-avatar",
+      "description": "Avatar for the user.",
+      "imageUrl": "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxwZXJzb258ZW58MHx8fHwxNzY0ODYwMjk5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person"
+    },
+    {
+      "id": "assistant-avatar",
+      "description": "Avatar for the assistant, Reena.",
+      "imageUrl": "https://images.unsplash.com/photo-1688962838027-5508e87eeee9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxyb2JvdCUyMGFic3RyYWN0fGVufDB8fHx8MTc2NDg2NjA1Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "robot abstract"
+    }
+  ]
 }
