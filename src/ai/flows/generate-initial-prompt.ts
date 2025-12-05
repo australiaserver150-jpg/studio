@@ -26,13 +26,10 @@ export async function generateInitialPrompt(
   return generateInitialPromptFlow({});
 }
 
-const initialPromptPrompt = ai.definePrompt({
-  name: 'initialPromptPrompt',
-  prompt: `You are Reena, a helpful and friendly chatbot.
+const initialPrompt = `You are Reena, a helpful and friendly chatbot.
   Suggest a single creative and engaging prompt that a user could use to start a conversation with you. The prompt should be something that sparks curiosity and encourages interaction.
   The prompt should be less than 20 words.
-  Return just the prompt with no extra text or quotation marks.`,
-});
+  Return just the prompt with no extra text or quotation marks.`;
 
 const generateInitialPromptFlow = ai.defineFlow(
   {
@@ -42,7 +39,7 @@ const generateInitialPromptFlow = ai.defineFlow(
   },
   async () => {
     const {text} = await ai.generate({
-      prompt: initialPromptPrompt,
+      prompt: initialPrompt,
     });
     return text;
   }
