@@ -4,7 +4,7 @@ import { CHAT_CONFIG } from '@/lib/chat-config';
 import type { Message } from '@/lib/types';
 
 export async function POST(request: NextRequest) {
-  const { messages }: { messages: Message[] } = await request.json();
+  const { messages, systemPrompt }: { messages: Message[], systemPrompt?: string } = await request.json();
 
   const lastMessage = messages[messages.length - 1];
   if (!lastMessage || lastMessage.role !== 'user') {
@@ -27,7 +27,8 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const response = await streamingTextGeneration({ prompt: lastMessage.content });
+    const prompt = `${systemPrompt || ''}\n\n${lastMessage.content}`;
+    const response = await streamingTextGeneration({ prompt });
     const text = response.text;
     
     if (CHAT_CONFIG.USE_STREAMING) {
