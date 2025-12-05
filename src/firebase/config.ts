@@ -1,9 +1,9 @@
 export const firebaseConfig = {
-  apiKey: "AIzaSyAMFS5J4hGgyJ-03gQXNHRbGblDMV-UUyg",
-  authDomain: "chatbot-982e4.firebaseapp.com",
-  databaseURL: "https://chatbot-982e4-default-rtdb.firebaseio.com",
-  projectId: "chatbot-982e4",
-  storageBucket: "chatbot-982e4.firebasestorage.app",
-  messagingSenderId: "67348755974",
-  appId: "1:67348755974:web:a96ce12cf1419bdcd9b587"
+  apiKey: "AIzaSyC-k7CAOqPXUOoRPmPlug_ylVw5O8AQG7Q",
+  authDomain: "studio-2434338363-fd0eb.firebaseapp.com",
+  databaseURL: "https://studio-2434338363-fd0eb-default-rtdb.firebaseio.com",
+  projectId: "studio-2434338363-fd0eb",
+  storageBucket: "studio-2434338363-fd0eb.firebasestorage.app",
+  messagingSenderId: "945229700348",
+  appId: "1:945229700348:web:6ff1700d05bbfee3c84b79"
 };
