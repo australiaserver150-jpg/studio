@@ -9,10 +9,17 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import {Message, roleToModelRole} from 'genkit';
+import {z} from 'zod';
+
+const MessageSchema = z.object({
+  role: z.enum(['user', 'assistant', 'system']),
+  content: z.string(),
+});
 
 const StreamingTextGenerationInputSchema = z.object({
-  prompt: z.string().describe('The prompt to generate text from.'),
+  messages: z.array(MessageSchema).describe('The history of the conversation.'),
+  systemPrompt: z.string().optional().describe('An optional system prompt.'),
 });
 
 export type StreamingTextGenerationInput = z.infer<
@@ -33,21 +40,28 @@ export async function streamingTextGeneration(
   return streamingTextGenerationFlow(input);
 }
 
-const streamingTextGenerationPrompt = ai.definePrompt({
-  name: 'streamingTextGenerationPrompt',
-  input: {schema: StreamingTextGenerationInputSchema},
-  output: {schema: StreamingTextGenerationOutputSchema},
-  prompt: `Generate text from the following prompt: {{{prompt}}}`,
-});
-
 const streamingTextGenerationFlow = ai.defineFlow(
   {
     name: 'streamingTextGenerationFlow',
     inputSchema: StreamingTextGenerationInputSchema,
     outputSchema: StreamingTextGenerationOutputSchema,
   },
-  async input => {
-    const {output} = await streamingTextGenerationPrompt(input);
-    return output!;
+  async ({messages, systemPrompt}) => {
+    const history: Message[] = messages.map((message) => ({
+      role: roleToModelRole(message.role),
+      content: [{text: message.content}],
+    }));
+
+    if (systemPrompt) {
+      history.unshift({
+        role: 'system',
+        content: [{text: systemPrompt}],
+      });
+    }
+
+    const {text} = await ai.generate({
+      history,
+    });
+    return {text};
   }
 );

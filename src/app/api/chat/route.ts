@@ -26,11 +26,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    // Combine system prompt and user messages into a single string for the AI
-    const conversationHistory = messages.map(msg => `${msg.role}: ${msg.content}`).join('\n');
-    const prompt = `${systemPrompt || ''}\n\n${conversationHistory}`;
-
-    const response = await streamingTextGeneration({ prompt });
+    const response = await streamingTextGeneration({ messages, systemPrompt });
     const text = response.text;
     
     if (CHAT_CONFIG.USE_STREAMING) {
