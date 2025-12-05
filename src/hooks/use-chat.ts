@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useToast } from './use-toast';
 import type { Message } from '@/lib/types';
 import { CHAT_CONFIG } from '@/lib/chat-config';
+import { useUser, useFirestore, useAuth } from '@/firebase';
+import { collection, addDoc, serverTimestamp, query, orderBy, onSnapshot } from 'firebase/firestore';
 
 const initialMessages: Message[] = [
   {
@@ -26,22 +28,62 @@ export function useChat() {
 
   const { toast } = useToast();
   const abortControllerRef = useRef<AbortController | null>(null);
+  
+  const { user } = useUser();
+  const firestore = useFirestore();
 
-  // Load state from localStorage on initial render
+  const getChatCollectionPath = useCallback(() => {
+    if (!user) return null;
+    return `users/${user.uid}/chats`;
+  }, [user]);
+
+  // Load state from localStorage/Firestore on initial render
   useEffect(() => {
-    try {
-      const savedMessages = localStorage.getItem('chat_messages');
-      if (savedMessages) {
-        setMessages(
-          (JSON.parse(savedMessages) as any[]).map((msg) => ({
-            ...msg,
-            createdAt: new Date(msg.createdAt),
-          }))
-        );
-      } else {
+    if (user) {
+      const chatCollectionPath = getChatCollectionPath();
+      if (!chatCollectionPath) return;
+
+      const q = query(collection(firestore, chatCollectionPath), orderBy('createdAt', 'asc'));
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        if (snapshot.empty) {
+          setMessages(initialMessages);
+          return;
+        }
+        const newMessages = snapshot.docs.map((doc) => {
+          const data = doc.data();
+          return {
+            ...data,
+            id: doc.id,
+            createdAt: (data.createdAt as any)?.toDate() || new Date(),
+          } as Message;
+        });
+        setMessages(newMessages);
+      });
+      return () => unsubscribe();
+    } else {
+       try {
+        const savedMessages = localStorage.getItem('chat_messages');
+        if (savedMessages) {
+          setMessages(
+            (JSON.parse(savedMessages) as any[]).map((msg) => ({
+              ...msg,
+              createdAt: new Date(msg.createdAt),
+            }))
+          );
+        } else {
+          setMessages(initialMessages);
+        }
+      } catch (error) {
+        console.error('Failed to load from localStorage', error);
         setMessages(initialMessages);
       }
+    }
+  }, [user, firestore, getChatCollectionPath]);
 
+
+  // Load settings from localStorage
+  useEffect(() => {
+    try {
       const savedSystemPrompt = localStorage.getItem('chat_system_prompt');
       if (savedSystemPrompt) setSystemPrompt(savedSystemPrompt);
 
@@ -53,20 +95,22 @@ export function useChat() {
         if (savedApiKey) setApiKey(savedApiKey);
       }
     } catch (error) {
-      console.error('Failed to load from localStorage', error);
-      setMessages(initialMessages);
+      console.error('Failed to load settings from localStorage', error);
     }
   }, []);
 
-  // Save state to localStorage when it changes
+  // Save messages to localStorage for guests
   useEffect(() => {
-    try {
-      localStorage.setItem('chat_messages', JSON.stringify(messages));
-    } catch (error) {
-      console.error('Failed to save messages to localStorage', error);
+    if (!user) {
+      try {
+        localStorage.setItem('chat_messages', JSON.stringify(messages));
+      } catch (error) {
+        console.error('Failed to save messages to localStorage', error);
+      }
     }
-  }, [messages]);
+  }, [messages, user]);
 
+  // Save settings to localStorage
   useEffect(() => {
     try {
       localStorage.setItem('chat_system_prompt', systemPrompt);
@@ -92,6 +136,16 @@ export function useChat() {
     setInput(e.target.value);
   };
 
+  const addMessageToDb = async (message: Omit<Message, 'id' | 'createdAt'>) => {
+    const chatCollectionPath = getChatCollectionPath();
+    if (!chatCollectionPath) return;
+
+    await addDoc(collection(firestore, chatCollectionPath), {
+      ...message,
+      createdAt: serverTimestamp(),
+    });
+  }
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
@@ -102,7 +156,13 @@ export function useChat() {
       content: input,
       createdAt: new Date(),
     };
-    setMessages((prev) => [...prev, newUserMessage]);
+    
+    if (user) {
+      addMessageToDb(newUserMessage);
+    } else {
+      setMessages((prev) => [...prev, newUserMessage]);
+    }
+
     setInput('');
     setIsLoading(true);
 
@@ -132,30 +192,59 @@ export function useChat() {
       let assistantResponse = '';
       const assistantMessageId = Date.now().toString();
 
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: assistantMessageId,
+      if (user) {
+        // This is a bit of a trick. We add the message with an empty content
+        // so it gets an ID and a timestamp, then we'll stream update it.
+        const assistantMessageRef = await addDoc(collection(firestore, getChatCollectionPath()!), {
           role: 'assistant',
           content: '',
-          createdAt: new Date(),
-        },
-      ]);
-      
-      // eslint-disable-next-line no-constant-condition
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        assistantResponse += decoder.decode(value, { stream: true });
-        setMessages((prev) =>
-          prev.map((msg) =>
-            msg.id === assistantMessageId
-              ? { ...msg, content: assistantResponse }
-              : msg
-          )
-        );
+          createdAt: serverTimestamp(),
+        });
+        
+        // eslint-disable-next-line no-constant-condition
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          assistantResponse += decoder.decode(value, { stream: true });
+        }
+        // Final update is done outside the loop when user is logged in
+        // to avoid too many writes to firestore. We will just update the final message.
+        // For a better UX we could update the doc every few seconds.
+      } else {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: assistantMessageId,
+            role: 'assistant',
+            content: '',
+            createdAt: new Date(),
+          },
+        ]);
+        
+        // eslint-disable-next-line no-constant-condition
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          assistantResponse += decoder.decode(value, { stream: true });
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.id === assistantMessageId
+                ? { ...msg, content: assistantResponse }
+                : msg
+            )
+          );
+        }
       }
+
+       const assistantFinalMessage: Omit<Message, 'id' | 'createdAt'> = {
+          role: 'assistant',
+          content: assistantResponse,
+        };
+
+      if (user) {
+         addMessageToDb(assistantFinalMessage)
+      }
+
     } catch (error: any) {
       if (error.name !== 'AbortError') {
         toast({
@@ -163,8 +252,10 @@ export function useChat() {
           title: 'An error occurred.',
           description: error.message || 'Please try again.',
         });
-        // Remove empty assistant message on error
-        setMessages(prev => prev.filter(m => m.role !== 'assistant' || m.content !== ''));
+        // For logged in users, we don't remove messages optimistically
+        if(!user) {
+          setMessages(prev => prev.filter(m => m.role !== 'assistant' || m.content !== ''));
+        }
       }
     } finally {
       setIsLoading(false);
@@ -179,7 +270,16 @@ export function useChat() {
     }
   };
 
-  const clear = () => {
+  const clear = async () => {
+    if (user) {
+      const chatCollectionPath = getChatCollectionPath();
+      if (!chatCollectionPath) return;
+
+      const q = query(collection(firestore, chatCollectionPath));
+      const snapshot = await getDocs(q);
+      const deletePromises = snapshot.docs.map(doc => deleteDoc(doc.ref));
+      await Promise.all(deletePromises);
+    }
     setMessages(initialMessages);
   };
 
@@ -199,8 +299,22 @@ export function useChat() {
     });
   };
 
-  const importChat = (newMessages: Message[]) => {
-    setMessages(newMessages.map(m => ({ ...m, createdAt: new Date(m.createdAt) })));
+  const importChat = async (newMessages: Message[]) => {
+    if (user) {
+      await clear(); // Clear existing messages
+      const chatCollectionPath = getChatCollectionPath();
+      if (!chatCollectionPath) return;
+      
+      const addPromises = newMessages.map(msg => addDoc(collection(firestore, chatCollectionPath), {
+        role: msg.role,
+        content: msg.content,
+        createdAt: new Date(msg.createdAt),
+      }));
+      await Promise.all(addPromises);
+
+    } else {
+      setMessages(newMessages.map(m => ({ ...m, createdAt: new Date(m.createdAt) })));
+    }
   };
 
 

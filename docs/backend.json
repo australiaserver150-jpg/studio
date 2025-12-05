@@ -1,0 +1,63 @@
+{
+  "entities": {
+    "user": {
+      "title": "User",
+      "description": "A user of the application.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The user's name."
+        },
+        "email": {
+          "type": "string",
+          "description": "The user's email."
+        },
+        "avatar": {
+          "type": "string",
+          "description": "URL to the user's avatar."
+        }
+      },
+      "required": ["name", "email"]
+    },
+    "chat": {
+      "title": "Chat",
+      "description": "A chat message.",
+      "type": "object",
+      "properties": {
+        "role": {
+          "type": "string",
+          "description": "The role of the message sender.",
+          "enum": ["user", "assistant"]
+        },
+        "content": {
+          "type": "string",
+          "description": "The content of the message."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The time the message was created."
+        }
+      },
+      "required": ["role", "content", "createdAt"]
+    }
+  },
+  "auth": {
+    "providers": ["google.com"]
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": {
+        "$ref": "#/entities/user"
+      },
+      "description": "User profile information."
+    },
+    "/users/{userId}/chats/{chatId}": {
+      "schema": {
+        "$ref": "#/entities/chat"
+      },
+      "description": "Chat messages for a user."
+    }
+  }
+}

@@ -12,13 +12,55 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import { Settings, Trash2 } from 'lucide-react';
+import { Settings, Trash2, LogIn, LogOut } from 'lucide-react';
 import { ThemeToggle } from './theme-toggle';
 import { SettingsDialog } from './settings-dialog';
 import { useChat } from '@/hooks/use-chat';
+import { useUser } from '@/firebase';
+import { GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
+import { useAuth } from '@/firebase';
+import { useToast } from '@/hooks/use-toast';
 
 export function ChatHeader() {
   const { clear } = useChat();
+  const { user, loading } = useUser();
+  const auth = useAuth();
+  const { toast } = useToast();
+
+  const handleLogin = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      await signInWithPopup(auth, provider);
+      toast({
+        title: 'Logged In',
+        description: 'You have successfully signed in.',
+      });
+    } catch (error) {
+      console.error('Login failed', error);
+      toast({
+        variant: 'destructive',
+        title: 'Login Failed',
+        description: 'Could not sign in with Google. Please try again.',
+      });
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      toast({
+        title: 'Logged Out',
+        description: 'You have successfully signed out.',
+      });
+    } catch (error) {
+      console.error('Logout failed', error);
+      toast({
+        variant: 'destructive',
+        title: 'Logout Failed',
+        description: 'Could not sign out. Please try again.',
+      });
+    }
+  };
 
   return (
     <div className="flex items-center justify-between w-full p-4 border-b h-14">
@@ -54,6 +96,17 @@ export function ChatHeader() {
           </Button>
         </SettingsDialog>
         <ThemeToggle />
+        {loading ? null : user ? (
+          <Button variant="ghost" size="icon" onClick={handleLogout}>
+            <LogOut className="w-4 h-4" />
+            <span className="sr-only">Logout</span>
+          </Button>
+        ) : (
+          <Button variant="ghost" size="icon" onClick={handleLogin}>
+            <LogIn className="w-4 h-4" />
+            <span className="sr-only">Login</span>
+          </Button>
+        )}
       </div>
     </div>
   );
