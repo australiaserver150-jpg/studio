@@ -5,7 +5,7 @@ import { useToast } from './use-toast';
 import type { Message } from '@/lib/types';
 import { CHAT_CONFIG } from '@/lib/chat-config';
 import { useUser, useFirestore, useAuth } from '@/firebase';
-import { collection, addDoc, serverTimestamp, query, orderBy, onSnapshot } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, getDocs, deleteDoc } from 'firebase/firestore';
 
 const initialMessages: Message[] = [
   {
@@ -171,7 +171,7 @@ export function useChat() {
     try {
       const res = await fetch(CHAT_CONFIG.API_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           messages: [...messages, newUserMessage],
           systemPrompt,
@@ -180,7 +180,7 @@ export function useChat() {
       });
 
       if (!res.ok) {
-        throw new Error(await res.text());
+        throw new Error(await res.text() || 'An unknown error occurred');
       }
 
       if (!res.body) {
@@ -193,23 +193,19 @@ export function useChat() {
       const assistantMessageId = Date.now().toString();
 
       if (user) {
-        // This is a bit of a trick. We add the message with an empty content
-        // so it gets an ID and a timestamp, then we'll stream update it.
-        const assistantMessageRef = await addDoc(collection(firestore, getChatCollectionPath()!), {
+        const chatCollectionPath = getChatCollectionPath();
+        if(!chatCollectionPath) throw new Error("User not logged in");
+        const assistantMessageRef = await addDoc(collection(firestore, chatCollectionPath), {
           role: 'assistant',
           content: '',
           createdAt: serverTimestamp(),
         });
         
-        // eslint-disable-next-line no-constant-condition
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
           assistantResponse += decoder.decode(value, { stream: true });
         }
-        // Final update is done outside the loop when user is logged in
-        // to avoid too many writes to firestore. We will just update the final message.
-        // For a better UX we could update the doc every few seconds.
       } else {
         setMessages((prev) => [
           ...prev,
@@ -221,7 +217,6 @@ export function useChat() {
           },
         ]);
         
-        // eslint-disable-next-line no-constant-condition
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
@@ -252,9 +247,8 @@ export function useChat() {
           title: 'An error occurred.',
           description: error.message || 'Please try again.',
         });
-        // For logged in users, we don't remove messages optimistically
         if(!user) {
-          setMessages(prev => prev.filter(m => m.role !== 'assistant' || m.content !== ''));
+          setMessages(prev => prev.slice(0, prev.length -1));
         }
       }
     } finally {
@@ -290,7 +284,7 @@ export function useChat() {
     a.href = url;
     a.download = `reena-chat-history-${new Date().toISOString()}.json`;
     document.body.appendChild(a);
-    a.click();
+a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     toast({

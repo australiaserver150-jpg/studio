@@ -2,6 +2,7 @@ import { type NextRequest } from 'next/server';
 import { streamingTextGeneration } from '@/ai/flows/streaming-text-generation';
 import { CHAT_CONFIG } from '@/lib/chat-config';
 import type { Message } from '@/lib/types';
+import { GenkitError } from 'genkit';
 
 export async function POST(request: NextRequest) {
   const { messages, systemPrompt }: { messages: Message[], systemPrompt?: string } = await request.json();
@@ -44,8 +45,40 @@ export async function POST(request: NextRequest) {
     } else {
       return new Response(JSON.stringify({ text }), { headers: { 'Content-Type': 'application/json' } });
     }
-  } catch (error) {
-    console.error(error);
-    return new Response('Error generating response', { status: 500 });
+  } catch (e) {
+    const error = e as GenkitError;
+    let errorMessage = 'An unexpected error occurred.';
+    let errorStatus = 500;
+
+    if (error.name === 'GenkitError') {
+      switch (error.reason) {
+        case 'INVALID_ARGUMENT':
+          errorMessage =
+            'There was an issue with the request to the AI. Please check the data being sent.';
+          errorStatus = 400;
+          break;
+        case 'UNAUTHENTICATED':
+          errorMessage =
+            'The API key is missing or invalid. Please check your environment variables.';
+          errorStatus = 401;
+          break;
+        case 'PERMISSION_DENIED':
+          errorMessage =
+            'You do not have permission to access this resource. Check your API key and permissions.';
+          errorStatus = 403;
+          break;
+        case 'UNAVAILABLE':
+          errorMessage = 'The AI service is currently unavailable. Please try again later.';
+          errorStatus = 503;
+          break;
+        default:
+          errorMessage = error.message;
+      }
+    } else if (e instanceof Error) {
+      errorMessage = e.message;
+    }
+
+    console.error(e);
+    return new Response(errorMessage, { status: errorStatus });
   }
 }
